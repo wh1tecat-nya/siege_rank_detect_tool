@@ -1,9 +1,9 @@
+// import modules
 import { app, Menu, MenuItem, Tray, BrowserWindow, ipcMain } from "electron";
 import * as jimp from "jimp";
+import fetch from "node-fetch";
 import * as fs from "fs";
 import * as url from "url";
-
-const vision = require("@google-cloud/vision");
 
 /**
  * Set `__static` path to static files in production
@@ -13,42 +13,149 @@ if (process.env.NODE_ENV !== "development") {
 	global.__static = require("path").join(__dirname, "/static").replace(/\\/g, "\\\\")
 }
 
-let mainWindow
+// init constant value
+const winURL = process.env.NODE_ENV === "development" ? "http://localhost:9080" : `file://${__dirname}/index.html`;
+const visionKey = "AIzaSyBsFcQNV6modwuDOZfdDZbQ-Qvqhn8gwpU";
 
-const winURL = process.env.NODE_ENV === "development"
-	? "http://localhost:9080"
-	: `file://${__dirname}/index.html`
+// init let value
+let tray;
+let mainWindow;
+let watcher = null;
+let fileName;
 
+app.on("ready", () => {
+	createTray();
+	createWindow();
+});
+
+// set ipc event
+ipcMain.on("folderPath", (event, arg) => {
+	console.log("reflesh watcher");
+	watcher = null;
+	setWatcher(arg);
+});
+
+// init function
 const createWindow = () => {
-	/**
-	 * Initial window options
-	 */
 	mainWindow = new BrowserWindow({
-		width: 640,
-		height: 480,
-		resizable: false
-	})
+		width: 600,
+		height: 800,
+		resizable: false,
+		useContentSize: true
+	});
+	mainWindow.loadURL(winURL);
 
-	mainWindow.loadURL(winURL)
+	mainWindow.on("close", (e) => {
+		if (!app.isQuiting) {
+			e.preventDefault();
+			mainWindow.hide();
+		}
+	});
+};
 
-	mainWindow.on("closed", () => {
-		mainWindow = null
-	})
-}
+const createTray = () => {
+	tray = new Tray(`${__dirname}/resources/img/icon.png`);
+	const contextMenu = Menu.buildFromTemplate([
+		{
+			label: "config",
+			click: () => { mainWindow.show(); }
+		},
+		{
+			label: "quit",
+			click: () => {
+				app.isQuiting = true;
+				app.quit();
+			}
+		}
+	]);
+	tray.setContextMenu(contextMenu);
+	tray.on("click", () => {
+		tray.popUpContextMenu(contextMenu);
+	});
+};
 
-app.on("ready", createWindow)
+const setWatcher = (folderPath) => {
+	watcher = fs.watch(folderPath, {}, async (type, filename) => {
+		if (filename !== "Thumbs.db" && fileName !== filename && fs.existsSync(folderPath + filename)) {
+			fileName = filename;
+			const filePath = folderPath + filename;
+			console.log(`type:${type} filepath:${filePath}`);
+			setTimeout(() => {
+				cropPicture(filePath)
+					.then(getOCR)
+					.then(formatString)
+					.then((result) => {
+						mainWindow.webContents.send("namedata", result);
+					})
+					.catch((err) => {
+						console.log(err);
+					});
+			}, 500);
+		}
+	});
+};
 
-app.on("window-all-closed", () => {
-	if (process.platform !== "darwin") {
-		app.quit()
-	}
-})
+const cropPicture = (filePath) => {
+	return new Promise((resolve, reject) => {
+		jimp.read(filePath)
+			.then((img) => {
+				console.log(img);
+				img.crop(300, 697, 450, 270)
+					.getBase64(jimp.MIME_JPEG, (err, base64) => {
+						resolve(base64);
+					});
+			})
+			.catch((err) => {
+				console.log(err);
+				reject(err);
+			});
+	});
+};
 
-app.on("activate", () => {
-	if (mainWindow === null) {
-		createWindow()
-	}
-})
+const getOCR = (base64) => {
+	return new Promise((resolve, reject) => {
+		const sendJsonData = {
+			requests: [{
+				image: {
+					content: base64.replace(/^data:image\/jpeg;base64,/, "")
+				},
+				features: [{
+					type: "DOCUMENT_TEXT_DETECTION"
+				}]
+			}]
+		};
+
+		fetch(`https://vision.googleapis.com/v1/images:annotate?key=${visionKey}`, {
+			method: "POST",
+			headers: {
+				"Accept": "application/json",
+				"Content-Type": "application/json"
+			},
+			body: JSON.stringify(sendJsonData)
+		})
+			.then((response) => {
+				return response.json();
+			})
+			.then((json) => {
+				resolve(json);
+			});
+	});
+};
+
+const formatString = (result) => {
+	return new Promise((resolve, reject) => {
+		const descriptionString = result.responses[0].fullTextAnnotation.text.replace(/ |　/g, "");
+		console.log(result.responses[0].fullTextAnnotation);
+		let nameArray = descriptionString.split("\n");
+		nameArray = nameArray.filter((value) => {
+			return value.length > 3;
+		});
+		if (nameArray.length > 5) {
+			reject(new Error("overCount Names"));
+		}
+		resolve(nameArray);
+	});
+};
 
 /**
  * Auto Updater
