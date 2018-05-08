@@ -76,21 +76,23 @@ const createTray = () => {
 
 const setWatcher = (folderPath) => {
 	watcher = fs.watch(folderPath, {}, async (type, filename) => {
-		if (filename !== "Thumbs.db" && fileName !== filename && fs.existsSync(folderPath + filename)) {
-			fileName = filename;
+		if ( (filename !== "Thumbs.db" && filename !== ".DS_Store") && fileName !== filename) {
 			const filePath = folderPath + filename;
-			console.log(`type:${type} filepath:${filePath}`);
-			setTimeout(() => {
-				cropPicture(filePath)
-					.then(getOCR)
-					.then(formatString)
-					.then((result) => {
-						mainWindow.webContents.send("namedata", result);
-					})
-					.catch((err) => {
-						console.log(err);
-					});
-			}, 500);
+			if (fs.existsSync((filePath))) {
+				fileName = filename;
+				console.log(`type:${type} filepath:${filePath}`);
+				setTimeout(() => {
+					cropPicture(filePath)
+						.then(getOCR)
+						.then(formatString)
+						.then((result) => {
+							mainWindow.webContents.send("namedata", result);
+						})
+						.catch((err) => {
+							console.log(err);
+						});
+				}, 500);
+			}
 		}
 	});
 };

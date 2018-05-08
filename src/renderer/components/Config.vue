@@ -27,7 +27,7 @@
 		name: "Config",
 		mounted() {
 			if (localStorage.getItem("folderPath") !== null) {
-				folderPath.textContent = localStorage.getItem("folderPath");
+				folderPath.textContent = `${localStorage.getItem("folderPath")}\\`;
 				ipcRenderer.send("folderPath", localStorage.getItem("folderPath"));
 			}
 		},
@@ -37,8 +37,8 @@
 				dialog.showOpenDialog(focusedWindow, {
 					properties: ["openDirectory"]
 				}, (directory) => {
-					localStorage.setItem("folderPath", directory[0] + "\\");
-					folderPath.textContent = localStorage.getItem("folderPath");
+					localStorage.setItem("folderPath", directory[0]);
+					folderPath.textContent = `${localStorage.getItem("folderPath")}\\`;
 					ipcRenderer.send("folderPath", localStorage.getItem("folderPath"));
 				});
 			}
