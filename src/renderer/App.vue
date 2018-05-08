@@ -1,12 +1,8 @@
 <template>
-	<div id="app">
+	<div id="app" class="uk-background-secondary">
 		<router-view></router-view>
 	</div>
 </template>
-
-<style>
-	@import "./css/index.sass";
-</style>
 
 
 <script>

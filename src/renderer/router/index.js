@@ -7,12 +7,12 @@ export default new Router({
 	routes: [
 		{
 			path: "/",
-			name: "top",
+			name: "Top",
 			component: require("@/components/TopPage").default
 		},
 		{
-			path:"/config",
-			name: "config",
+			path:"/Config",
+			name: "Config",
 			component: require("@/components/Config").default
 		}
 	]

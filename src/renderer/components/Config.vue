@@ -1,9 +1,19 @@
 <template>
-	<div class="uk-section uk-section-secondary  uk-section-small">
+	<div class="uk-section uk-section-small">
 		<div class="uk-container">
 			<router-link class="uk-icon-button" uk-icon="icon: close; ratio: 2" to="/"></router-link>
-			<div class="uk-section">
-				<input type="button" v-on:click="setConfig" id="selectFolder" value="select folder"><span id="folderPath"></span>
+			<div class="uk-section uk-section-xsmall">
+				<div class="uk-card uk-card-default uk-card-hover">
+					<div class="uk-card-header">
+						<h3 class="uk-card-title">folderPath</h3>
+					</div>
+					<div class="uk-card-body">
+						<span id="folderPath"></span>
+					</div>
+					<div class="uk-card-footer">
+						<button type="button" class="uk-button uk-button-primary uk-button-small uk-width-1-1" v-on:click="setConfig" id="selectFolder">select folder</button>
+					</div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -14,7 +24,7 @@
 	const { dialog, BrowserWindow } = remote;
 
 	export default {
-		name: "config",
+		name: "Config",
 		mounted() {
 			if (localStorage.getItem("folderPath") !== null) {
 				folderPath.textContent = localStorage.getItem("folderPath");

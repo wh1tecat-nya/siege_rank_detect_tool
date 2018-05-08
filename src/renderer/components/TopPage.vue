@@ -15,14 +15,6 @@
 	export default {
 		components: {
 			UserInfo
-		},
-		updated: () => {
-			console.log("test");
-			let win = remote.getCurrentWindow();
-			win.setBounds({
-				width: document.getElementById("main").clientWidth,
-				height: documnet.getElementById("main").clientHeight
-			})
 		}
 	}
 </script>
