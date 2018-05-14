@@ -30,9 +30,11 @@
 				folderPath.textContent = `${localStorage.getItem("folderPath")}\\`;
 				ipcRenderer.send("folderPath", localStorage.getItem("folderPath"));
 			}
+			console.log("change")
+			this.$emit("changeWindowSize", 600, 450);
 		},
 		methods: {
-			setConfig : () => {
+			setConfig : function() {
 				const focusedWindow = BrowserWindow.getFocusedWindow();
 				dialog.showOpenDialog(focusedWindow, {
 					properties: ["openDirectory"]
