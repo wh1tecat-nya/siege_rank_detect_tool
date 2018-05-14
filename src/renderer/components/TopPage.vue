@@ -3,7 +3,7 @@
 		<div class="uk-container">
 			<router-link class="uk-icon-button" uk-icon="icon: cog; ratio: 2" to="/config"></router-link>
 		</div>
-		<UserList v-bind:userdata="userdata"></UserList>
+		<UserList :user-data="userData" ></UserList>
 		<UserInfo></UserInfo>
 	</div>
 </template>
@@ -15,11 +15,12 @@
 	import UserList from "./modules/UserList.vue"
 	import UserInfo from "./modules/UserInfo.vue"
 	export default {
+		name: "TopPage",
 		components: {
 			UserList,
 			UserInfo
 		},
-		props: ["userdata"],
+		props: ["userData"],
 		mounted() {
 			this.$emit("changeWindowSize", 600, 800);
 		},

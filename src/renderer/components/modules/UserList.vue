@@ -10,36 +10,9 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr>
-					<td>test1</td>
-					<td></td>
-					<td></td>
-					<td></td>
-					
-				</tr>
-				<tr>
-					<td>test2</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>test3</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>test4</td>
-					<td></td>
-					<td></td>
-					<td></td>
-				</tr>
-				<tr>
-					<td>test5</td>
-					<td></td>
-					<td></td>
-					<td></td>
+				<tr v-for="(user, key, index) in userData" :key="index">
+					<td>{{user.name}}</td>
+					<td>{{add1(user.ranks.apac.rank)}}</td>
 				</tr>
 			</tbody>
 		</table>
@@ -48,6 +21,17 @@
 
 <script>
 export default {
-	name:"UserList"
+	name:"UserList",
+	props: ["userData"],
+	data() {
+		return {
+			userdata: this.userData
+		}
+	},
+	methods: {
+		add1: function(val) {
+			return val+1;
+		}
+	}
 }
 </script>
