@@ -3,7 +3,7 @@ import Vue from "vue"
 import App from "./App"
 import router from "./router"
 
-import uikit from "./components/js/bundle";
+import uikit from "./assets/js/bundle";
 
 uikit();
 

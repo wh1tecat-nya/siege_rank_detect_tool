@@ -12,6 +12,7 @@
 			<tbody>
 				<tr v-for="(user, key, index) in userData" :key="index">
 					<td>{{user.name}}</td>
+					<td><img class="uk-preserve-width uk-border-circle" :src="getRankIcon(user.ranks.apac.rank)" width="40" ></td>
 					<td>{{add1(user.ranks.apac.rank)}}</td>
 				</tr>
 			</tbody>
@@ -31,6 +32,9 @@ export default {
 	methods: {
 		add1: function(val) {
 			return val+1;
+		},
+		getRankIcon: function(rank) {
+			return `static/img/ranks/${rank}.svg`;
 		}
 	}
 }

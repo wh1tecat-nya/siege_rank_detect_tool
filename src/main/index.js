@@ -31,6 +31,7 @@ app.on("ready", () => {
 // set ipc event
 ipcMain.on("folderPath", (event, arg) => {
 	console.log("reflesh watcher");
+	console.log(arg);
 	watcher = null;
 	setWatcher(arg);
 });
@@ -54,7 +55,7 @@ const createWindow = () => {
 };
 
 const createTray = () => {
-	tray = new Tray(`${__dirname}/resources/img/icon.png`);
+	tray = new Tray(`${__dirname}/resources/img/icon_small.png`);
 	const contextMenu = Menu.buildFromTemplate([
 		{
 			label: "config",
@@ -76,8 +77,10 @@ const createTray = () => {
 
 const setWatcher = (folderPath) => {
 	watcher = fs.watch(folderPath, {}, async (type, filename) => {
+		console.log(filename);
 		if ( (filename !== "Thumbs.db" && filename !== ".DS_Store") && fileName !== filename) {
-			const filePath = folderPath + filename;
+			const filePath = folderPath + "/" + filename;
+			console.log(filePath);
 			if (fs.existsSync((filePath))) {
 				fileName = filename;
 				console.log(`type:${type} filepath:${filePath}`);
@@ -147,7 +150,6 @@ const getOCR = (base64) => {
 const formatString = (result) => {
 	return new Promise((resolve, reject) => {
 		const descriptionString = result.responses[0].fullTextAnnotation.text.replace(/ |　/g, "");
-		console.log(result.responses[0].fullTextAnnotation);
 		let nameArray = descriptionString.split("\n");
 		nameArray = nameArray.filter((value) => {
 			return value.length > 3;
@@ -155,6 +157,7 @@ const formatString = (result) => {
 		if (nameArray.length > 5) {
 			reject(new Error("overCount Names"));
 		}
+		console.log(nameArray);
 		resolve(nameArray);
 	});
 };
