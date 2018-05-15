@@ -1,10 +1,10 @@
 <template>
-	<div class="uk-section uk-section-small uk-section-secondary">
+	<div class="uk-section uk-section-small">
 		<div class="uk-container">
 			<router-link class="uk-icon-button" uk-icon="icon: cog; ratio: 2" to="/config"></router-link>
 		</div>
-		<UserList :user-data="userData" ></UserList>
-		<UserInfo></UserInfo>
+		<UserList :search-user-data="searchUserData" :has-data="hasData" @setUserIndex="setUserIndex" ></UserList>
+		<UserInfo :search-user-data="searchUserData" :show-index="showIndex" ></UserInfo>
 	</div>
 </template>
 
@@ -20,9 +20,19 @@
 			UserList,
 			UserInfo
 		},
-		props: ["userData"],
+		props: ["searchUserData", "hasData"],
 		mounted() {
-			this.$emit("changeWindowSize", 600, 800);
+			this.$emit("changeWindowSize", 600, 850);
 		},
+		data () {
+			return {
+				showIndex: null
+			}
+		},
+		methods :{
+			setUserIndex: function(index) {
+				this.showIndex = index;
+			}
+		}
 	}
 </script>

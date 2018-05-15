@@ -40,7 +40,7 @@ ipcMain.on("folderPath", (event, arg) => {
 const createWindow = () => {
 	mainWindow = new BrowserWindow({
 		width: 600,
-		height: 800,
+		height: 850,
 		resizable: false,
 		useContentSize: true
 	});
@@ -77,10 +77,8 @@ const createTray = () => {
 
 const setWatcher = (folderPath) => {
 	watcher = fs.watch(folderPath, {}, async (type, filename) => {
-		console.log(filename);
 		if ( (filename !== "Thumbs.db" && filename !== ".DS_Store") && fileName !== filename) {
 			const filePath = folderPath + "/" + filename;
-			console.log(filePath);
 			if (fs.existsSync((filePath))) {
 				fileName = filename;
 				console.log(`type:${type} filepath:${filePath}`);
@@ -104,7 +102,6 @@ const cropPicture = (filePath) => {
 	return new Promise((resolve, reject) => {
 		jimp.read(filePath)
 			.then((img) => {
-				console.log(img);
 				img.crop(300, 697, 450, 270)
 					.getBase64(jimp.MIME_JPEG, (err, base64) => {
 						resolve(base64);

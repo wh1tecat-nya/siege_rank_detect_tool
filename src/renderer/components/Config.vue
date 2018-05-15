@@ -11,7 +11,7 @@
 						<span id="folderPath"></span>
 					</div>
 					<div class="uk-card-footer">
-						<button type="button" class="uk-button uk-button-primary uk-button-small uk-width-1-1" v-on:click="setConfig" id="selectFolder">select folder</button>
+						<button type="button" class="uk-button uk-button-primary uk-button-small uk-width-1-1" @click="setConfig" id="selectFolder">select folder</button>
 					</div>
 				</div>
 			</div>
