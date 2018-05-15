@@ -27,11 +27,12 @@
 			setEvent : async function() {
 				ipcRenderer.on("namedata", async (event, arg) => {
 					this.searchUserData = [];
+					this.hasData = false;
 					for (let i=0; i<arg.length; i++) {
 						const value = arg[i];
 						this.$set(this.searchUserData, i, { index:i, searchParam:value });
 						console.log(value);
-						await this.searchUserInfo(value)
+						this.searchUserInfo(value)
 							.then((json) => {
 								this.$set(this.searchUserData[i], "searchData", json[0]);
 								this.$set(this.searchUserData[i], "iconUrl", `https://ubisoft-avatars.akamaized.net/${this.searchUserData[i].searchData.id}/default_146_146.png`);
